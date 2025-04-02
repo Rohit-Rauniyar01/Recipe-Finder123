@@ -27,6 +27,8 @@
     int sweetsCount = 0;
     int userCount = 0;
     int totalRecipes = 0;
+    int missingRecipesCount = 0;
+    String missingRecipesStatus = "stable";
 
     try {
         Class.forName("com.mysql.cj.jdbc.Driver");
@@ -60,6 +62,23 @@
         rs = ps.executeQuery();
         if (rs.next()) {
             userCount = rs.getInt("userCount");
+        }
+
+        // Get missing recipes count (recipes with missing ingredients)
+        String missingQuery = "SELECT COUNT(*) AS missingCount FROM Recipes WHERE ingredients IS NULL OR ingredients = '' OR instructions IS NULL OR instructions = ''";
+        ps = conn.prepareStatement(missingQuery);
+        rs = ps.executeQuery();
+        if (rs.next()) {
+            missingRecipesCount = rs.getInt("missingCount");
+        }
+
+        // Determine status
+        if (missingRecipesCount > 5) {
+            missingRecipesStatus = "increase";
+        } else if (missingRecipesCount > 0) {
+            missingRecipesStatus = "decrease";
+        } else {
+            missingRecipesStatus = "stable";
         }
 
     } catch (Exception e) {
@@ -511,6 +530,31 @@
             padding: 1.5rem;
         }
 
+        /* Recipe Table Styles */
+        .recipe-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .recipe-table th, .recipe-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        .recipe-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        .edit-btn {
+            color: #1e90ff;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .edit-btn:hover {
+            text-decoration: underline;
+        }
+
         /* Responsive Design */
         @media (max-width: 992px) {
             .sidebar {
@@ -615,21 +659,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="stat-card green">
-    			<div class="stat-header">
-        			<div>
-            			<div class="stat-title">Missing Recipes</div>
-            			<div class="stat-value" id="missingRecipesCount">0</div>
-            			<div class="stat-change">
-                		<span id="missingRecipesStatus">Loading...</span>
-            			</div>
-        			</div>
-        		<div class="stat-icon accent" onclick="showMissingRecipes()">
-            		<i class="fas fa-search"></i>
-        		</div>
-    		</div>
-			</div>
-
+               
             </div>
 
             <!-- Recipe Categories -->
@@ -698,7 +728,6 @@
                     <h3 class="category-name">Sweets</h3>
                     <div class="category-count"><%= sweetsCount %></div>
                 </div>
-                
             </div>
         </div>
     </div>
@@ -734,12 +763,12 @@
                 });
         }
 
-        // Show searched recipes
-        function showSearchedRecipes() {
-            fetch('GetSearchedRecipes.jsp')
+        // Show missing recipes
+        function showMissingRecipes() {
+            fetch('GetMissingRecipes.jsp')
                 .then(response => response.text())
                 .then(data => {
-                    document.getElementById('modalTitle').textContent = 'Searched Recipes';
+                    document.getElementById('modalTitle').textContent = 'Recipes with Missing Information';
                     document.getElementById('modalContent').innerHTML = data;
                     document.getElementById('recipesModal').classList.add('show');
                     document.body.style.overflow = 'hidden';
@@ -747,7 +776,7 @@
                 .catch(error => {
                     console.error('Error:', error);
                     document.getElementById('modalContent').innerHTML = 
-                        '<p>Error loading searched recipes. Please try again.</p>';
+                        '<p>Error loading missing recipes. Please try again.</p>';
                 });
         }
 

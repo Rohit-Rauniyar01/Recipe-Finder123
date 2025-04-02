@@ -249,10 +249,11 @@
     </div>
     
     <!-- Display error messages if any -->
-    <% String error = request.getParameter("error");
-       if (error != null) { %>
-           <p class="error"><%= error %></p>
-    <% } %>
+<% String error = request.getParameter("error");
+   if (error != null && !error.trim().isEmpty()) { %>
+       <p class="error"><%= error %></p>
+<% } %>
+
     
     <form action="SignUpServlet" method="post">
         <div class="form-group">
@@ -266,8 +267,7 @@
         <div class="form-group">
             <i class="fas fa-lock"></i>
             <input type="password" name="password" id="password" placeholder="Password" required>
-            <i class="fas fa-eye password-toggle" onclick="togglePassword()"></i>
-           
+            
         </div>
         <button type="submit">Sign up</button>
     </form>
