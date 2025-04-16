@@ -28,6 +28,26 @@
             gap: 10px;
         }
 
+		 /* Header Section */
+        .page-header {
+            padding: 20px 5%;
+            background-color: var(--white);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+        }
+        
+        .page-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.8rem;
+            color: var(--primary-color);
+        }
+        
+        .page-title i {
+            font-size: 1.5rem;
+        }
+		
         .recipe-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -115,9 +135,13 @@
     </style>
 </head>
 <body>
-
-<h1>🍽️ All Recipes</h1>
-
+    <%@ include file="BackButton.jsp" %>
+    
+    <header class="page-header">
+        <h1 class="page-title animate__animated animate__fadeIn">
+            <i class="fas fa-utensils"></i> All Recipes
+        </h1>
+    </header>
 <div class="recipe-grid">
     <%
         // Check if the user is logged in through session or cookies

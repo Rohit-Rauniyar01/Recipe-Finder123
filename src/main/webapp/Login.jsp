@@ -268,6 +268,7 @@
     }
 </style>
 </head>
+<%@ include file = "BackButton.jsp" %>
 
 <%
     String savedEmail = "";

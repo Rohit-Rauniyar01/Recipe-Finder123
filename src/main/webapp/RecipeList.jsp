@@ -262,6 +262,8 @@
     </style>
 </head>
 <body>
+
+<%@ include file = "BackButton.jsp" %>
     <div class="header-container animate-fade">
         <div class="container text-center">
             <h1 class="page-title"><i class="fas fa-utensils me-2"></i>Recipe List</h1>

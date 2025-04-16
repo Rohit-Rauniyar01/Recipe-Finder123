@@ -236,12 +236,7 @@
 </head>
 <body>
 
-<div class="back-arrow">
-    <a href="javascript:history.back();">
-        <i class="fas fa-arrow-left"></i>
-        <span>Back</span>
-    </a>
-</div>
+<%@ include file = "BackButton.jsp" %>
 
 <div class="container">
     <div class="sign">

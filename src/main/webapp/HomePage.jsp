@@ -259,7 +259,7 @@
     }
 
     .inspiration, .trending {
-        padding: 40px 5%;
+        padding: 30px 5%;
     }
 
     /* Cards Container */
@@ -429,6 +429,32 @@
 </head>
 <body>
 
+<%
+    // Check if user is logged in
+    String user = (String) session.getAttribute("username");
+    String role = (String) session.getAttribute("role");
+    
+    // Check cookies if session is null
+    if (user == null) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("username")) {
+                    user = cookie.getValue();
+                    session.setAttribute("username", user); // Restore session from cookie
+                    break;
+                }
+            }
+        }
+    }
+    
+    // Redirect to login page if user is not logged in
+    if (user == null) {
+        response.sendRedirect("Login.jsp");
+        return;
+    }
+%>
+
 <header>
     <div class="logo">
         <img src="logo.png" alt="Recipe Finder Logo">
@@ -439,35 +465,17 @@
             <li><a href="RecipePage.jsp">Recipes</a></li>
             <li><a href="Trending.jsp">Trending</a></li>
             <li><a href="SearchPage.jsp">Search</a></li>
+            <% if (user != null) { %>
+                <li><a href="Favorites.jsp">Favorite</a></li>
+            <% } %>
 
-            <%
-                String user = (String) session.getAttribute("username");
-                String role = (String) session.getAttribute("role");
-                
-                // Check cookies if session is null
-                if (user == null) {
-                    Cookie[] cookies = request.getCookies();
-                    if (cookies != null) {
-                        for (Cookie cookie : cookies) {
-                            if (cookie.getName().equals("username")) {
-                                user = cookie.getValue();
-                                session.setAttribute("username", user); // Restore session from cookie
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                if (user == null) { 
-            %>
+            <% if (user == null) { %>
                 <!-- If No User Logged In -->
                 <li class="auth-buttons">
                     <a href="Signup.jsp" class="animate__animated animate__fadeIn">Sign Up</a>
                     <a href="Login.jsp" class="animate__animated animate__fadeIn">Sign In</a>
                 </li>
-            <%
-                } else {
-            %>
+            <% } else { %>
                 <!-- If User/Admin Logged In -->
                 <li class="profile">
                     <div id="profileIcon" class="profile-icon">
@@ -481,9 +489,7 @@
                         <a href="LogoutServlet"><i class="fas fa-sign-out-alt"></i> Logout</a>
                     </div>
                 </li>
-            <%
-                }
-            %>
+            <% } %>
         </ul>
     </nav>
 </header>

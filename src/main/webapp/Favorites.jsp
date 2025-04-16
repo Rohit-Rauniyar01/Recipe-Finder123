@@ -1,13 +1,20 @@
-<%@ page import="java.sql.Connection" %>
-<%@ page import="java.sql.DriverManager" %>
-<%@ page import="java.sql.PreparedStatement" %>
-<%@ page import="java.sql.ResultSet" %>
+<%@ page import="java.sql.*" %>
+<%@ page session="true" %>
+<%
+    // Redirect if user is not logged in
+    Integer userId = (Integer) session.getAttribute("userId");
+    if (userId == null) {
+        response.sendRedirect("login.jsp"); // Redirect to login if user not authenticated
+        return;
+    }
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Favorite Recipes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Font & Styling Libraries -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Capriola&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -205,6 +212,7 @@
     </style>
 </head>
 <body>
+<%@ include file = "BackButton.jsp" %>
 
 <div class="container">
     <header>
@@ -217,28 +225,34 @@
             try {
                 Class.forName("com.mysql.cj.jdbc.Driver");
                 Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/RecipeFinder", "root", "root");
-                String sql = "SELECT r.id, r.name, r.image FROM favorites f JOIN recipes r ON f.recipe_id = r.id WHERE f.user_id = ?";
+
+                String sql = "SELECT r.id, r.name, r.image " +
+                             "FROM favorites f " +
+                             "JOIN recipes r ON f.recipe_id = r.id " +
+                             "WHERE f.user_id = ?";
                 PreparedStatement stmt = conn.prepareStatement(sql);
-                stmt.setInt(1, 1); // Replace with dynamic user ID
+                stmt.setInt(1, userId); // Use session-based user ID
+
                 ResultSet rs = stmt.executeQuery();
+
                 while (rs.next()) {
                     hasFavorites = true;
         %>
-                    <div class="recipe-card">
-                        <div class="favorite-icon" data-recipe-id="<%= rs.getInt("id") %>">
-                            <i class="fas fa-heart"></i>
-                        </div>
-                        <a href="RecipeDetails.jsp?id=<%= rs.getInt("id") %>" style="text-decoration: none; color: inherit;">
-                            <div class="recipe-image">
-                                <img src="uploads/images/<%= rs.getString("image") %>" 
-                                     alt="<%= rs.getString("name") %>" 
-                                     onerror="this.onerror=null; this.src='uploads/images/default.jpg';">
-                            </div>
-                            <div class="recipe-info">
-                                <h3><%= rs.getString("name") %></h3>
-                            </div>
-                        </a>
+            <div class="recipe-card">
+                <div class="favorite-icon" data-recipe-id="<%= rs.getInt("id") %>">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <a href="RecipeDetails.jsp?id=<%= rs.getInt("id") %>" style="text-decoration: none; color: inherit;">
+                    <div class="recipe-image">
+                        <img src="uploads/images/<%= rs.getString("image") %>"
+                             alt="<%= rs.getString("name") %>"
+                             onerror="this.onerror=null; this.src='uploads/images/default.jpg';">
                     </div>
+                    <div class="recipe-info">
+                        <h3><%= rs.getString("name") %></h3>
+                    </div>
+                </a>
+            </div>
         <%
                 }
                 rs.close();
@@ -246,6 +260,7 @@
                 conn.close();
             } catch (Exception e) {
                 out.println("<p style='color:var(--primary-color); text-align:center; padding:20px;'>Error loading favorites. Please try again later.</p>");
+                e.printStackTrace();
             }
         %>
     </div>
@@ -255,25 +270,23 @@
             <i class="far fa-heart"></i>
             <h2>No favorites yet</h2>
             <p>You haven't saved any recipes to your favorites. Explore our collection and save your favorites!</p>
-            <button class="explore-btn" onclick="window.location.href='recipes.jsp'">Explore Recipes</button>
+            <button class="explore-btn" onclick="window.location.href='RecipePage.jsp'">Explore Recipes</button>
         </div>
     <% } %>
 </div>
 
 <script>
-    // Add smooth behavior for favorite icons
+    // Smooth delete animation and AJAX call for removing favorites
     document.querySelectorAll('.favorite-icon').forEach(icon => {
         icon.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            
+
             const recipeId = this.getAttribute('data-recipe-id');
             const heart = this.querySelector('i');
-            
-            // Add animation
+
             heart.style.transform = 'scale(1.3)';
-            
-            // Here you would typically make an AJAX call to remove from favorites
+
             fetch('RemoveFavoriteServlet', {
                 method: 'POST',
                 headers: {
@@ -283,14 +296,11 @@
             })
             .then(response => {
                 if (response.ok) {
-                    // Remove the card after successful deletion
                     this.closest('.recipe-card').style.opacity = '0';
                     setTimeout(() => {
                         this.closest('.recipe-card').remove();
-                        
-                        // Check if no favorites left
                         if (document.querySelectorAll('.recipe-card').length === 0) {
-                            location.reload(); // Or show empty state dynamically
+                            location.reload(); // Reload to show empty state
                         }
                     }, 300);
                 }
@@ -299,7 +309,7 @@
                 console.error('Error:', error);
                 heart.style.transform = 'scale(1)';
             });
-            
+
             setTimeout(() => {
                 heart.style.transform = 'scale(1)';
             }, 300);

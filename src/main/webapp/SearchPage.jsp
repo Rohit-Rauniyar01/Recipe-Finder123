@@ -214,6 +214,7 @@
     </style>
 </head>
 <body>
+<%@ include file = "BackButton.jsp" %>
 
 <div class="container">
     <h1 class="animate__animated animate__fadeIn">🔍 Search Your Recipe</h1>

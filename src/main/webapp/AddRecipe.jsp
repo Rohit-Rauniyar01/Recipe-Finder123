@@ -103,9 +103,7 @@
     </style>
 </head>
 <body>
-    <div class="back-arrow">
-        <a href="AdminPanal.jsp"><i class="fas fa-arrow-left"></i></a>
-    </div>
+    <%@ include file = "BackButton.jsp" %>
 
     <h1>Add Recipe</h1>
     <form action="AddRecipeServlet" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">

@@ -85,6 +85,7 @@
     </style>
 </head>
 <body>
+	<%@ include file = "BackButton.jsp" %>
     <div class="container">
         <h2><i class="fas fa-users-cog"></i> User Management</h2>
 

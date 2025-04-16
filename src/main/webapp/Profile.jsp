@@ -260,11 +260,7 @@
     </style>
 </head>
 <body>
-
-<div class="container animate__animated animate__fadeIn">
-    <div class="back-arrow">
-        <a href="HomePage.jsp"><i class="fas fa-arrow-left"></i></a>
-    </div>
+<%@ include file = "BackButton.jsp" %>
 
     <div class="profile-section">
         <div class="profile-image-container" onclick="document.getElementById('fileInput').click()">

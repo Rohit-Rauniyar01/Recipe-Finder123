@@ -25,9 +25,8 @@ public class SignUpServlet extends HttpServlet {
 
         String username = request.getParameter("username");
         String email = request.getParameter("email");
-        String password = request.getParameter("password"); // Storing password in plaintext
+        String password = request.getParameter("password");
 
-        // Prevent admin account creation manually
         if (email.equalsIgnoreCase("kalu@admin.com")) {
             response.sendRedirect("Signup.jsp?error=Admin account cannot be created manually.");
             return;
@@ -35,29 +34,36 @@ public class SignUpServlet extends HttpServlet {
 
         Connection con = null;
         PreparedStatement ps = null;
+        PreparedStatement checkUser = null;
 
         try {
-            // Database connection setup
             Class.forName("com.mysql.cj.jdbc.Driver");
             con = DriverManager.getConnection("jdbc:mysql://localhost:3306/RecipeFinder", "root", "root");
 
-            // SQL query to insert new user
+            // ✅ Check if user already exists
+            String checkSql = "SELECT email FROM users WHERE email = ?";
+            checkUser = con.prepareStatement(checkSql);
+            checkUser.setString(1, email);
+            if (checkUser.executeQuery().next()) {
+                response.sendRedirect("Signup.jsp?error=User already exists.");
+                return;
+            }
+
+            // Insert user if email not taken
             String sql = "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, 'user')";
             ps = con.prepareStatement(sql);
             ps.setString(1, username);
             ps.setString(2, email);
-            ps.setString(3, password); // Storing password as plaintext
+            ps.setString(3, password);
 
             int rowsInserted = ps.executeUpdate();
             if (rowsInserted > 0) {
-                // Create Session
                 HttpSession session = request.getSession();
                 session.setAttribute("username", username);
-                session.setMaxInactiveInterval(30 * 60); // 30 minutes
+                session.setMaxInactiveInterval(30 * 60);
 
-                // Create Cookie
                 Cookie userCookie = new Cookie("username", username);
-                userCookie.setMaxAge(7 * 24 * 60 * 60); // 7 days
+                userCookie.setMaxAge(7 * 24 * 60 * 60);
                 response.addCookie(userCookie);
 
                 response.sendRedirect("Login.jsp?success=Account created successfully! Please login.");
@@ -68,6 +74,7 @@ public class SignUpServlet extends HttpServlet {
             e.printStackTrace();
             response.sendRedirect("Signup.jsp?error=Database error, please try again.");
         } finally {
+            try { if (checkUser != null) checkUser.close(); } catch (SQLException e) { e.printStackTrace(); }
             try { if (ps != null) ps.close(); } catch (SQLException e) { e.printStackTrace(); }
             try { if (con != null) con.close(); } catch (SQLException e) { e.printStackTrace(); }
         }

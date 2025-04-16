@@ -27,6 +27,25 @@
             align-items: center;
             gap: 10px;
         }
+        /* Header Section */
+        .page-header {
+            padding: 20px 5%;
+            background-color: var(--white);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+        }
+        
+        .page-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.8rem;
+            color: var(--primary-color);
+        }
+        
+        .page-title i {
+            font-size: 1.5rem;
+        }
 
         .recipe-grid {
             display: grid;
@@ -84,7 +103,13 @@
 </head>
 <body>
 
-<h1>🔥 Trending Recipes</h1>
+    <%@ include file="BackButton.jsp" %>
+    
+    <header class="page-header">
+        <h1 class="page-title animate__animated animate__fadeIn">
+            <i class="fas fa-utensils"></i> Trending Page
+        </h1>
+    </header>
 
 <div class="recipe-grid">
     <%

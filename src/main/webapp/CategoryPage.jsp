@@ -122,26 +122,7 @@
         display: block;
     }
 
-    /* Back Button */
-    .back-btn {
-        position: absolute;
-        top: 20px;
-        left: 20px;
-        background-color: var(--primary-color);
-        color: var(--white);
-        padding: 8px 15px;
-        border-radius: 5px;
-        text-decoration: none;
-        transition: var(--transition);
-        display: flex;
-        align-items: center;
-        gap: 5px;
-    }
-
-    .back-btn:hover {
-        background-color: var(--accent-color);
-        transform: translateX(-3px);
-    }
+}
 
     /* Responsive Adjustments */
     @media (max-width: 992px) {
@@ -211,9 +192,7 @@
 </style>
 </head>
 <body>
-    <a href="HomePage.jsp" class="back-btn animate__animated animate__fadeIn">
-        <i class="fas fa-arrow-left"></i> Back
-    </a>
+<%@ include file = "BackButton.jsp" %>
 
     <h2 class="animate__animated animate__fadeIn">Recipe Categories</h2>
     

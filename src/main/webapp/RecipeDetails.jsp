@@ -152,10 +152,9 @@
 
 </head>
 <body>
+<%@ include file = "BackButton.jsp" %>
 
-<div class="back-arrow">
-    <a href="javascript:history.back();"><i class="fas fa-arrow-left"></i></a>
-</div>
+
 
 <%
     String recipeId = request.getParameter("id");
