@@ -8,6 +8,13 @@
                       (String) userSession.getAttribute("username") : "Guest";
 %>
 
+<%
+    String successMsg = request.getParameter("success");
+    String errorMsg = request.getParameter("error");
+%>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -110,15 +117,23 @@
         <i class="fas fa-user"></i>
     </div>
     <div class="username"><%= username %></div>
+    
+    <% if (successMsg != null) { %>
+    <p style="color: green;"><%= successMsg %></p>
+<% } else if (errorMsg != null) { %>
+    <p style="color: red;"><%= errorMsg %></p>
+<% } %>
 
     <div class="edit-section">
         <form action="UpdateNameServlet" method="post">
-            <label for="newName"><strong>Edit Name</strong></label><br>
-            <input type="text" id="newName" name="newName" placeholder="Change Name" required>
-        </form>
-        	<div class="button-container">
-    		<button type="submit" class="save-btn">Save It</button>
-			</div>
+    		<label for="newName"><strong>Edit Name</strong></label><br>
+    		<input type="text" id="newName" name="newName" placeholder="Change Name" required>
+
+    		<div class="button-container">
+        		<button type="submit" class="save-btn">Save It</button>
+    		</div>
+		</form>
+
         	
         
     </div>

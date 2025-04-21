@@ -66,7 +66,7 @@ public class UpdateNameServlet extends HttpServlet {
 	            int rowsUpdated = stmt.executeUpdate();
 	            if (rowsUpdated > 0) {
 	                session.setAttribute("username", newName); // Update session attribute
-	                response.sendRedirect("Profile.jsp?success=Name updated successfully");
+	                response.sendRedirect("EditName.jsp?success=Name updated successfully");
 	            } else {
 	                response.sendRedirect("EditName.jsp?error=Could not update name. Try again.");
 	            }
